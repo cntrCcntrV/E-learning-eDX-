@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenEdX Platform API - Documentation</title>
+    <meta name="description" content="Complete API documentation for managing courses, enrollments, and student progress on your OpenEdX learning platform">
+    
+    <!-- Syntax Highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary: #0066cc;
+            --primary-dark: #004999;
+            --accent: #00d4ff;
+            --bg-main: #0a0e27;
+            --bg-card: #141b3d;
+            --text-primary: #f0f4f8;
+            --text-secondary: #b8c5d6;
+            --border: #2a3b5c;
+            --success: #00c853;
+            --warning: #ff9800;
+            --error: #ff3d00;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', sans-serif;
+            background: var(--bg-main);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            padding: 4rem 2rem;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 102, 204, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(0, 212, 255, 0.1) 0%, transparent 70%);
+            animation: pulse 15s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .header .logo {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+        
+        .header p {
+            font-size: 1.25rem;
+            opacity: 0.95;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .nav {
+            position: sticky;
+            top: 0;
+            background: var(--bg-card);
+            padding: 1rem 2rem;
+            border-bottom: 2px solid var(--primary);
+            margin-bottom: 2rem;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.3s;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+        }
+        
+        .nav-links a:hover {
+            color: var(--accent);
+            background: rgba(0, 212, 255, 0.1);
+        }
+        
+        .section {
+            background: var(--bg-card);
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+        
+        h1, h2, h3, h4 {
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+        
+        h1 { font-size: 2.5rem; }
+        h2 { 
+            font-size: 2rem; 
+            border-bottom: 3px solid var(--primary); 
+            padding-bottom: 0.75rem;
+            color: var(--accent);
+        }
+        h3 { 
+            font-size: 1.5rem; 
+            color: var(--primary);
+        }
+        h4 { font-size: 1.25rem; }
+        
+        p {
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+        }
+        
+        code {
+            background: var(--bg-main);
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: var(--accent);
+            border: 1px solid var(--border);
+        }
+        
+        pre {
+            background: var(--bg-main);
+            padding: 1.5rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 1rem 0;
+            border: 1px solid var(--border);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        pre code {
+            background: none;
+            padding: 0;
+            color: inherit;
+            border: none;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            background: var(--bg-main);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        th {
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+        }
+        
+        tr:hover {
+            background: rgba(0, 212, 255, 0.05);
+        }
+        
+        tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-right: 0.5rem;
+        }
+        
+        .badge-get { background: var(--primary); color: white; }
+        .badge-post { background: var(--success); color: white; }
+        .badge-required { background: var(--error); color: white; }
+        .badge-optional { background: var(--warning); color: white; }
+        
+        .endpoint-box {
+            background: var(--bg-main);
+            padding: 1.25rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+            margin: 1rem 0;
+            font-family: monospace;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .error-block {
+            background: rgba(255, 61, 0, 0.1);
+            border-left: 4px solid var(--error);
+            padding: 1.25rem;
+            border-radius: 4px;
+            margin: 1rem 0;
+        }
+        
+        .error-block h4 {
+            color: var(--error);
+            margin-top: 0;
+        }
+        
+        .success-block {
+            background: rgba(0, 200, 83, 0.1);
+            border-left: 4px solid var(--success);
+            padding: 1rem;
+            border-radius: 4px;
+            margin: 1rem 0;
+        }
+        
+        .info-block {
+            background: rgba(0, 102, 204, 0.1);
+            border-left: 4px solid var(--primary);
+            padding: 1.25rem;
+            border-radius: 4px;
+            margin: 1rem 0;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 3rem 2rem;
+            color: var(--text-secondary);
+            border-top: 1px solid var(--border);
+            margin-top: 3rem;
+            background: var(--bg-card);
+        }
+        
+        .footer a {
+            color: var(--accent);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        
+        .footer a:hover {
+            color: var(--primary);
+        }
+        
+        .copy-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            opacity: 0;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+        
+        .code-block {
+            position: relative;
+        }
+        
+        .code-block:hover .copy-btn {
+            opacity: 1;
+        }
+        
+        .copy-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+        
+        ul {
+            margin: 1rem 0;
+            padding-left: 2rem;
+            color: var(--text-secondary);
+        }
+        
+        li {
+            margin: 0.5rem 0;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .stat-card {
+            background: var(--bg-main);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+        
+        .stat-card h4 {
+            color: var(--accent);
+            font-size: 2rem;
+            margin: 0;
+        }
+        
+        .stat-card p {
+            color: var(--text-secondary);
+            margin: 0.5rem 0 0 0;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .header .logo {
+                font-size: 3rem;
+            }
+            
+            .container {
+                padding: 1rem;
+            }
+            
+            .section {
+                padding: 1.5rem;
+            }
+            
+            .nav-links {
+                gap: 1rem;
+            }
+            
+            table {
+                font-size: 0.875rem;
+            }
+            
+            th, td {
+                padding: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">🎓</div>
+            <h1>OpenEdX Platform API</h1>
+            <p>Complete API documentation for managing courses, enrollments, and student progress</p>
+        </div>
+    </div>
+    
+    <nav class="nav">
+        <ul class="nav-links">
+            <li><a href="#overview">Overview</a></li>
+            <li><a href="#courses">Courses</a></li>
+            <li><a href="#enrollments">Enrollments</a></li>
+            <li><a href="#progress">Progress</a></li>
+            <li><a href="#assignments">Assignments</a></li>
+            <li><a href="#webhooks">Webhooks</a></li>
+            <li><a href="#errors">Errors</a></li>
+        </ul>
+    </nav>
+    
+    <div class="container">
+        <div class="section" id="overview">
+            <h2>Getting Started</h2>
+            
+            <div class="info-block">
+                <h4>Base URL</h4>
+                <code>https://learn.yourdomain.com/api/v1</code>
+            </div>
+            
+            <h3>Authentication</h3>
+            <p>All API requests require authentication using an API token in the <code>Authorization</code> header:</p>
+            <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                <pre><code>Authorization: Bearer your_api_token_here</code></pre>
+            </div>
+            
+            <div class="info-block">
+                <p><strong>Generate API tokens:</strong> Visit your dashboard at <code>https://learn.yourdomain.com/admin/api-tokens</code></p>
+            </div>
+            
+            <h3>Rate Limits</h3>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h4>100</h4>
+                    <p>requests/minute</p>
+                </div>
+                <div class="stat-card">
+                    <h4>500</h4>
+                    <p>burst requests/hour</p>
+                </div>
+                <div class="stat-card">
+                    <h4>10,000</h4>
+                    <p>requests/day</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section" id="courses">
+            <h2>📚 Course Management</h2>
+            
+            <h3>List All Courses</h3>
+            <p>Retrieve a list of all available courses on the platform.</p>
+            
+            <div class="endpoint-box">
+                <span class="badge badge-get">GET</span>
+                <code>/courses</code>
+            </div>
+            
+            <h4>Query Parameters</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Type</th>
+                        <th>Required</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>status</code></td>
+                        <td>string</td>
+                        <td><span class="badge badge-optional">Optional</span></td>
+                        <td>Filter by: <code>active</code>, <code>archived</code>, <code>draft</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>category</code></td>
+                        <td>string</td>
+                        <td><span class="badge badge-optional">Optional</span></td>
+                        <td>Filter by category slug</td>
+                    </tr>
+                    <tr>
+                        <td><code>page</code></td>
+                        <td>integer</td>
+                        <td><span class="badge badge-optional">Optional</span></td>
+                        <td>Page number (default: 1)</td>
+                    </tr>
+                    <tr>
+                        <td><code>per_page</code></td>
+                        <td>integer</td>
+                        <td><span class="badge badge-optional">Optional</span></td>
+                        <td>Items per page (max 100, default: 20)</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h4>Example Request</h4>
+            <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                <pre><code class="language-bash">curl -X GET "https://learn.yourdomain.com/api/v1/courses?status=active&category=programming" \
+  -H "Authorization: Bearer your_api_token_here"</code></pre>
+            </div>
+            
+            <h4>Example Response</h4>
+            <div class="success-block">
+                <strong>Status:</strong> 200 OK
+            </div>
+            <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                <pre><code class="language-json">{
+  "courses": [
+    {
+      "id": "course-v1:YourOrg+CS101+2024",
+      "title": "Introduction to Computer Science",
+      "description": "Learn the fundamentals of programming",
+      "category": "programming",
+      "status": "active",
+      "instructor": {
+        "id": 123,
+        "name": "Jane Doe"
+      },
+      "enrollment_count": 245,
+      "start_date": "2024-02-01T00:00:00Z",
+      "thumbnail_url": "https://learn.yourdomain.com/media/cs101.jpg"
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "per_page": 20,
+    "total_pages": 5,
+    "total_count": 98
+  }
+}</code></pre>
+            </div>
+            
+            <hr style="margin: 3rem 0; border: none; border-top: 1px solid var(--border);">
+            
+            <h3>Get Course Details</h3>
+            <p>Retrieve detailed information about a specific course.</p>
+            
+            <div class="endpoint-box">
+                <span class="badge badge-get">GET</span>
+                <code>/courses/{course_id}</code>
+            </div>
+            
+            <h4>Example Request</h4>
+            <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                <pre><code class="language-bash">curl -X GET "https://learn.yourdomain.com/api/v1/courses/course-v1:YourOrg+CS101+2024" \
+  -H "Authorization: Bearer your_api_token_here"</code></pre>
+            </div>
+        </div>
+        
+        <div class="section" id="enrollments">
+            <h2>👥 Enrollment Management</h2>
+            
+            <h3>Enroll User in Course</h3>
+            <p>Enroll a user in a specific course.</p>
+            
+            <div class="endpoint-box">
+                <span class="badge badge-post">POST</span>
+                <code>/courses/{course_id}/enroll</code>
+            </div>
+            
+            <h4>Request Body</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Type</th>
+                        <th>Required</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>user_id</code></td>
+                        <td>integer</td>
+                        <td><span class="badge badge-required">Required</span></td>
+                        <td>The user's ID to enroll</td>
+                    </tr>
+                    <tr>
+                        <td><code>mode</code></td>
+                        <td>string</td>
+                        <td><span class="badge badge-optional">Optional</span></td>
+                        <td>Enrollment mode: <code>honor</code>, <code>verified</code>, <code>audit</code></td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h4>Example Request</h4>
+            <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                <pre><code class="language-bash">curl -X POST "https://learn.yourdomain.com/api/v1/courses/course-v1:YourOrg+CS101+2024/enroll" \
+  -H "Authorization: Bearer your_api_token_here" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "user_id": 789,
+    "mode": "honor"
+  }'</code></pre>
+            </div>
+            
+            <h4>Example Response</h4>
+            <div class="success-block">
+                <strong>Status:</strong> 200 OK
+            </div>
+            <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                <pre><code class="language-json">{
+  "enrollment": {
+    "id": "enroll_abc123xyz",
+    "user_id": 789,
+    "course_id": "course-v1:YourOrg+CS101+2024",
+    "mode": "honor",
+    "is_active": true,
+    "created_at": "2024-10-05T14:30:00Z",
+    "progress": {
+      "completion_percentage": 0,
+      "completed_units": 0,
+      "total_units": 48
+    }
+  },
+  "message": "Successfully enrolled user in course"
+}</code></pre>
+            </div>
+        </div>
+        
+        <div class="section" id="progress">
+            <h2>📊 Progress Tracking</h2>
+            
+            <h3>Get User Progress</h3>
+            <p>Retrieve a user's progress in a specific course.</p>
+            
+            <div class="endpoint-box">
+                <span class="badge badge-get">GET</span>
+                <code>/courses/{course_id}/progress/{user_id}</code>
+            </div>
+            
+            <h4>Example Response</h4>
+            <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                <pre><code class="language-json">{
+  "user_id": 789,
+  "course_id": "course-v1:YourOrg+CS101+2024",
+  "progress": {
+    "completion_percentage": 45.8,
+    "completed_units": 22,
+    "total_units": 48,
+    "time_spent_minutes": 1847
+  },
+  "grades": {
+    "current_grade": 78.5,
+    "passing_grade": 60,
+    "is_passing": true
+  }
+}</code></pre>
+            </div>
+        </div>
+        
+        <div class="section" id="assignments">
+            <h2>📝 Assignment Submission</h2>
+            
+            <h3>Submit Assignment</h3>
+            <p>Submit a student's assignment for grading.</p>
+            
+            <div class="endpoint-box">
+                <span class="badge badge-post">POST</span>
+                <code>/courses/{course_id}/assignments/{assignment_id}/submit</code>
+            </div>
+            
+            <h4>Request Body</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Type</th>
+                        <th>Required</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>user_id</code></td>
+                        <td>integer</td>
+                        <td><span class="badge badge-required">Required</span></td>
+                        <td>User submitting the assignment</td>
+                    </tr>
+                    <tr>
+                        <td><code>submission_text</code></td>
+                        <td>string</td>
+                        <td><span class="badge badge-optional">Optional</span></td>
+                        <td>Text-based submission content</td>
+                    </tr>
+                    <tr>
+                        <td><code>file_urls</code></td>
+                        <td>array</td>
+                        <td><span class="badge badge-optional">Optional</span></td>
+                        <td>Array of URLs to uploaded files</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="section" id="webhooks">
+            <h2>🔔 Webhooks</h2>
+            <p>Subscribe to real-time events from your OpenEdX platform.</p>
+            
+            <h3>Available Events</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Event</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>course.created</code></td>
+                        <td>New course was created</td>
+                    </tr>
+                    <tr>
+                        <td><code>enrollment.created</code></td>
+                        <td>User enrolled in a course</td>
+                    </tr>
+                    <tr>
+                        <td><code>progress.updated</code></td>
+                        <td>User's progress was updated</td>
+                    </tr>
+                    <tr>
+                        <td><code>assignment.submitted</code></td>
+                        <td>Assignment was submitted</td>
+                    </tr>
+                    <tr>
+                        <td><code>certificate.issued</code></td>
+                        <td>Certificate was issued to user</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div class="info-block">
+                <p><strong>Configure webhooks:</strong> Visit <code>/admin/webhooks</code> in your admin panel</p>
+            </div>
+        </div>
+        
+        <div class="section" id="errors">
+            <h2>⚠️ Error Responses</h2>
+            
+            <h3>400 Bad Request</h3>
+            <div class="error-block">
+                <h4>Invalid Request</h4>
+                <p>The request was malformed or missing required parameters.</p>
+            </div>
+            <div class="code-block">
+                <pre><code class="language-json">{
+  "error": {
+    "type": "invalid_request",
+    "message": "Missing required parameter: user_id",
+    "param": "user_id"
+  }
+}</code></pre>
+            </div>
+            
+            <h3>401 Unauthorized</h3>
+            <div class="error-block">
+                <h4>Authentication Error</h4>
+                <p>Your API token is missing, invalid, or expired.</p>
+            </div>
+            
+            <h3>429 Too Many Requests</h3>
+            <div class="error-block">
+                <h4>Rate Limit Exceeded</h4>
+                <p>You've exceeded your rate limit. Implement exponential backoff.</p>
+            </div>
+            <div class="code-block">
+                <pre><code class="language-json">{
+  "error": {
+    "type": "rate_limit_error",
+    "message": "Rate limit exceeded",
+    "retry_after": 60
+  }
+}</code></pre>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>💻 Code Examples</h2>
+            
+            <h3>Python</h3>
+            <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                <pre><code class="language-python">import requests
+
+BASE_URL = "https://learn.yourdomain.com/api/v1"
+API_TOKEN = "your_api_token_here"
+
+headers = {
+    "Authorization": f"Bearer {API_TOKEN}",
+    "Content-Type": "application/json"
+}
+
+# List active courses
+response = requests.get(
+    f"{BASE_URL}/courses?status=active",
+    headers=headers
+)
+courses = response.json()
+
+# Enroll a user
+enrollment = {
+    "user_id": 789,
+    "mode": "honor"
+}
+
+response = requests.post(
+    f"{BASE_URL}/courses/course-v1:YourOrg+CS101+2024/enroll",
+    headers=headers,
+    json=enrollment
+)
+
+print("User enrolled successfully!")</code></pre>
+            </div>
+            
+            <h3>JavaScript (Node.js)</h3>
+            <div class="code-block">
+                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                <pre><code class="language-javascript">const BASE_URL = 'https://learn.yourdomain.com/api/v1';
+const API_TOKEN = 'your_api_token_here';
+
+async function getCourses() {
+  const response = await fetch(`${BASE_URL}/courses`, {
+    headers: {
+      'Authorization': `Bearer ${API_TOKEN}`
+    }
+  });
+  
+  const data = await response.json();
+  console.log(`Found ${data.courses.length} courses`);
+  return data;
+}
+
+getCourses();</code></pre>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>✅ Best Practices</h2>
+            <ul>
+                <li><strong>Authentication:</strong> Store API tokens securely, never commit to version control</li>
+                <li><strong>Rate Limiting:</strong> Implement exponential backoff for 429 errors</li>
+                <li><strong>Pagination:</strong> Always use pagination for list endpoints</li>
+                <li><strong>Error Handling:</strong> Check status codes and handle errors gracefully</li>
+                <li><strong>Webhooks:</strong> Use webhooks instead of polling for real-time updates</li>
+                <li><strong>HTTPS Only:</strong> Always use HTTPS for API requests</li>
+            </ul>
+        </div>
+    </div>
+    
+    <footer class="footer">
+        <p><strong>Support</strong></p>
+        <p>
+            <a href="https://learn.yourdomain.com/docs">Documentation</a> • 
+            <a href="https://forum.yourdomain.com">Community Forum</a> • 
+            <a href="https://github.com/cntrCcntrV/openedx-platform">GitHub</a>
+        </p>
+        <p style="margin-top: 2rem;">Built with ❤️ by <a href="https://github.com/cntrCcntrV">cntrCcntrV</a></p>
+    </footer>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>
+        hljs.highlightAll();
+        
+        function copyCode(button) {
+            const codeBlock = button.nextElementSibling;
+            const code = codeBlock.textContent;
+            
+            navigator.clipboard.writeText(code).then(() => {
+                button.textContent = 'Copied!';
+                button.style.background = 'var(--success)';
+                setTimeout(() => {
+                    button.textContent = 'Copy';
+                    button.style.background = 'var(--primary)';
+                }, 2000);
+            });
+        }
+        
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
